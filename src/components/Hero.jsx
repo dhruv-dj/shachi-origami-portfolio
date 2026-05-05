@@ -1,5 +1,9 @@
-/* Hero — full-viewport, origami crane watermark, elegant type */
+import { useContent } from "../context/ContentContext";
+
 export default function Hero() {
+  const { content } = useContent();
+  const { hero } = content;
+
   return (
     <section
       id="hero"
@@ -27,20 +31,22 @@ export default function Hero() {
         <div className="flex items-center justify-center gap-4 mb-8">
           <span className="block h-px w-16 bg-wood-light opacity-60" />
           <span className="font-sans text-xs tracking-[0.3em] uppercase text-muted">
-            Origami Artist
+            {hero.badgeText}
           </span>
           <span className="block h-px w-16 bg-wood-light opacity-60" />
         </div>
 
         <h1 className="font-serif font-light text-7xl md:text-9xl tracking-tight text-ink leading-none mb-6">
-          Shachi
+          {hero.firstName}
           <br />
-          <span className="italic font-light text-wood">Jain</span>
+          <span className="italic font-light text-wood">{hero.lastName}</span>
         </h1>
 
         <p className="font-sans font-light text-base md:text-lg text-muted max-w-md mx-auto leading-relaxed mb-12">
-          Transforming a single sheet of paper into worlds — one fold at a time.
-          Based in India, exhibiting worldwide.
+          {hero.tagline}
+          {hero.subtitle && (
+            <> <span className="block mt-1">{hero.subtitle}</span></>
+          )}
         </p>
 
         <div className="flex items-center justify-center gap-6">

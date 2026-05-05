@@ -1,9 +1,34 @@
 import { useState, useCallback } from "react";
-import { artworks } from "../data/artworks";
+import { artworks as svgArtworks } from "../data/artworks";
+import { useContent } from "../context/ContentContext";
 
 const FADE_MS = 380;
 
+function ArtworkDisplay({ art }) {
+  if (art.imageUrl) {
+    return <img src={art.imageUrl} alt={art.title} className="w-full h-full object-cover" />;
+  }
+  if (art.Artwork) {
+    return <art.Artwork />;
+  }
+  return <div className="w-full h-full bg-parchment" />;
+}
+
 export default function ExhibitionCarousel() {
+  const { content } = useContent();
+
+  const artworks = svgArtworks.map(art => {
+    const override = content.artworks?.find(a => a.id === art.id);
+    return override ? { ...art, ...override } : art;
+  });
+
+  const newArtworks = (content.artworks || []).filter(
+    a => !svgArtworks.find(d => d.id === a.id)
+  );
+
+  const all = [...artworks, ...newArtworks];
+  const contactEmail = content.contact?.email || 'shachi.origami@example.com';
+
   const [index, setIndex] = useState(0);
   const [displayIndex, setDisplayIndex] = useState(0);
   const [fading, setFading] = useState(false);
@@ -21,10 +46,11 @@ export default function ExhibitionCarousel() {
     [fading]
   );
 
-  const prev = () => goTo((index - 1 + artworks.length) % artworks.length);
-  const next = () => goTo((index + 1) % artworks.length);
+  const prev = () => goTo((index - 1 + all.length) % all.length);
+  const next = () => goTo((index + 1) % all.length);
 
-  const art = artworks[displayIndex];
+  const art = all[displayIndex] || all[0];
+  if (!art) return null;
 
   return (
     <section id="shop" className="exhibition-wall">
@@ -35,7 +61,7 @@ export default function ExhibitionCarousel() {
       {/* Spotlight + frame area */}
       <div className="py-16 px-6 flex flex-col items-center">
         <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted mb-10">
-          Available Works — {index + 1} / {artworks.length}
+          Available Works — {index + 1} / {all.length}
         </p>
 
         {/* Navigation + frame row */}
@@ -51,18 +77,14 @@ export default function ExhibitionCarousel() {
             </svg>
           </button>
 
-          {/* The frame — static; only the content inside fades */}
+          {/* The frame */}
           <div className="picture-frame flex-1 max-w-xl">
             <div className="mat-board">
-              {/* Artwork content — this is the only thing that transitions */}
               <div
                 className="aspect-[4/5] transition-opacity"
-                style={{
-                  transitionDuration: `${FADE_MS}ms`,
-                  opacity: fading ? 0 : 1,
-                }}
+                style={{ transitionDuration: `${FADE_MS}ms`, opacity: fading ? 0 : 1 }}
               >
-                <art.Artwork />
+                <ArtworkDisplay art={art} />
               </div>
             </div>
           </div>
@@ -93,7 +115,7 @@ export default function ExhibitionCarousel() {
           <div className="flex items-center justify-center gap-6">
             <span className="font-serif text-2xl text-wood">{art.price}</span>
             <a
-              href={`mailto:shachi.origami@example.com?subject=Inquiry: ${encodeURIComponent(art.title)}`}
+              href={`mailto:${contactEmail}?subject=Inquiry: ${encodeURIComponent(art.title)}`}
               className="inline-block px-6 py-2.5 bg-wood text-cream font-sans text-xs tracking-widest uppercase hover:bg-wood-dark transition-colors duration-300"
             >
               Inquire
@@ -103,7 +125,7 @@ export default function ExhibitionCarousel() {
 
         {/* Dot indicators */}
         <div className="flex gap-2 mt-10">
-          {artworks.map((_, i) => (
+          {all.map((_, i) => (
             <button
               key={i}
               onClick={() => goTo(i)}
