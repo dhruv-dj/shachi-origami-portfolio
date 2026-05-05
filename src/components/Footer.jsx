@@ -29,6 +29,14 @@ export default function Footer() {
       <p className="font-sans text-[10px] tracking-widest uppercase text-cream/20">
         © {new Date().getFullYear()} Shachi Jain. All rights reserved.
       </p>
+      <div className="mt-6">
+        <a
+          href="#admin"
+          className="font-sans text-[10px] tracking-widest uppercase text-cream/20 hover:text-cream/50 border border-cream/10 hover:border-cream/30 px-4 py-2 inline-block transition-colors duration-300"
+        >
+          Admin Portal
+        </a>
+      </div>
     </footer>
   );
 }
