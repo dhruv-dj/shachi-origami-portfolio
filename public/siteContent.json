@@ -1,0 +1,82 @@
+{
+  "hero": {
+    "badgeText": "Origami Artist",
+    "firstName": "Shachi",
+    "lastName": "Jain",
+    "tagline": "Transforming a single sheet of paper into worlds — one fold at a time.",
+    "subtitle": "Based in India, exhibiting worldwide."
+  },
+  "about": {
+    "photoUrl": "",
+    "paragraphs": [
+      "Shachi Jain is a contemporary origami artist whose work bridges the ancient Japanese tradition of paper folding with a distinctly modern sensibility. Each piece begins with a single uncut sheet — an act of faith that one flat plane can become something alive.",
+      "Working primarily with hand-dyed washi, lokta, and foil-backed papers, Shachi explores the tension between geometry and grace. Her pieces range from classical Orizuru cranes to complex modular kusudama structures that take hundreds of hours to assemble.",
+      "Her work has been exhibited across India and internationally, and is held in private collections around the world. Each framed piece is signed, dated, and comes with a certificate of authenticity."
+    ],
+    "stats": [
+      { "value": "8+", "label": "Years folding" },
+      { "value": "200+", "label": "Works created" },
+      { "value": "12", "label": "Exhibitions" }
+    ]
+  },
+  "contact": {
+    "email": "shachi.origami@example.com"
+  },
+  "videos": [],
+  "artworks": [
+    {
+      "id": 1,
+      "title": "Crimson Crane",
+      "year": 2024,
+      "medium": "Washi paper, single sheet",
+      "price": "₹6,500",
+      "description": "A traditional Orizuru folded from hand-dyed crimson washi — the crane, symbol of longevity and good fortune.",
+      "imageUrl": ""
+    },
+    {
+      "id": 2,
+      "title": "Kusudama Sphere",
+      "year": 2024,
+      "medium": "Origami paper, 60 modules",
+      "price": "₹12,000",
+      "description": "A modular kusudama assembled from 60 individual folded units, forming a perfect geometric sphere.",
+      "imageUrl": ""
+    },
+    {
+      "id": 3,
+      "title": "Sacred Lotus",
+      "year": 2023,
+      "medium": "Handmade lokta paper",
+      "price": "₹8,000",
+      "description": "Eight-petalled lotus in bloom, folded from Nepali lokta bark paper with a delicate texture.",
+      "imageUrl": ""
+    },
+    {
+      "id": 4,
+      "title": "Mountain Folds",
+      "year": 2024,
+      "medium": "Unryu tissue paper",
+      "price": "₹5,500",
+      "description": "An abstract landscape exploring the interplay of mountain and valley folds across tissue-thin unryu paper.",
+      "imageUrl": ""
+    },
+    {
+      "id": 5,
+      "title": "Twilight Butterfly",
+      "year": 2023,
+      "medium": "Foil-backed washi paper",
+      "price": "₹7,200",
+      "description": "A Papillon folded from iridescent foil-backed washi, catching light from every angle like a real wing.",
+      "imageUrl": ""
+    },
+    {
+      "id": 6,
+      "title": "Paper Dragon",
+      "year": 2024,
+      "medium": "Duo-colour washi paper",
+      "price": "₹14,000",
+      "description": "A complex dragon form folded from reversible duo-colour washi — deep teal on one side, gold on the other.",
+      "imageUrl": ""
+    }
+  ]
+}

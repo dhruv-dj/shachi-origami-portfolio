@@ -1,6 +1,30 @@
-import { artworks } from "../data/artworks";
+import { artworks as svgArtworks } from "../data/artworks";
+import { useContent } from "../context/ContentContext";
+
+function ArtworkDisplay({ art }) {
+  if (art.imageUrl) {
+    return <img src={art.imageUrl} alt={art.title} className="w-full h-full object-cover" />;
+  }
+  if (art.Artwork) {
+    return <art.Artwork />;
+  }
+  return <div className="w-full h-full bg-parchment" />;
+}
 
 export default function PortfolioGrid() {
+  const { content } = useContent();
+
+  const artworks = svgArtworks.map(art => {
+    const override = content.artworks?.find(a => a.id === art.id);
+    return override ? { ...art, ...override } : art;
+  });
+
+  const newArtworks = (content.artworks || []).filter(
+    a => !svgArtworks.find(d => d.id === a.id)
+  );
+
+  const all = [...artworks, ...newArtworks];
+
   return (
     <section id="gallery" className="py-28 px-6 bg-cream">
       <div className="max-w-6xl mx-auto">
@@ -10,13 +34,13 @@ export default function PortfolioGrid() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-          {artworks.map((art, i) => (
+          {all.map(art => (
             <div key={art.id} className="group relative overflow-hidden cursor-pointer">
               {/* Mini frame */}
               <div className="border-4 border-wood/60">
                 <div className="border-8 border-cream">
                   <div className="aspect-square">
-                    <art.Artwork />
+                    <ArtworkDisplay art={art} />
                   </div>
                 </div>
               </div>
