@@ -35,7 +35,13 @@ export async function putFile(token, owner, repo, path, content, message) {
   return request(token, 'PUT', `/repos/${owner}/${repo}/contents/${path}`, body);
 }
 
-export async function deployContent(token, owner, repo, content) {
-  const json = JSON.stringify(content, null, 2);
-  await putFile(token, owner, repo, 'public/siteContent.json', json, 'Update site content via admin panel');
+// Commits siteContent.json and adminConfig.json (with the password hash) in one deploy.
+export async function deployContent(token, owner, repo, content, passwordHash) {
+  const contentJson = JSON.stringify(content, null, 2);
+  await putFile(token, owner, repo, 'public/siteContent.json', contentJson, 'Update site content via admin panel');
+
+  if (passwordHash) {
+    const configJson = JSON.stringify({ passwordHash }, null, 2);
+    await putFile(token, owner, repo, 'public/adminConfig.json', configJson, 'Update admin password hash');
+  }
 }

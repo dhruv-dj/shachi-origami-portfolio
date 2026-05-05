@@ -1,17 +1,25 @@
-import { useState } from 'react';
-import { hasPassword, setPassword, checkPassword } from '../../utils/auth';
+import { useState, useEffect } from 'react';
+import { getPasswordHash, setPassword, checkPassword } from '../../utils/auth';
 
 export default function AdminLogin({ onSuccess }) {
-  const isFirstRun = !hasPassword();
+  const [loading, setLoading] = useState(true);
+  const [isFirstRun, setIsFirstRun] = useState(false);
   const [password, setPasswordValue] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    getPasswordHash().then(hash => {
+      setIsFirstRun(!hash);
+      setLoading(false);
+    });
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setSubmitting(true);
     try {
       if (isFirstRun) {
         if (password.length < 8) { setError('Password must be at least 8 characters.'); return; }
@@ -24,8 +32,16 @@ export default function AdminLogin({ onSuccess }) {
         else { setError('Incorrect password.'); }
       }
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="w-px h-12 bg-wood-light animate-pulse" />
+      </div>
+    );
   }
 
   return (
@@ -88,16 +104,27 @@ export default function AdminLogin({ onSuccess }) {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={submitting}
             className="w-full bg-wood text-cream font-sans text-xs tracking-widest uppercase py-3 hover:bg-wood-dark transition-colors duration-200 disabled:opacity-50"
           >
-            {loading ? 'Please wait…' : isFirstRun ? 'Create Password & Enter' : 'Log In'}
+            {submitting ? 'Please wait…' : isFirstRun ? 'Create Password & Enter' : 'Log In'}
           </button>
         </form>
 
-        <p className="mt-8 text-center font-sans text-xs text-muted/70">
-          To reset your password, clear this site's localStorage in your browser developer tools.
-        </p>
+        {isFirstRun && (
+          <p className="mt-6 text-center font-sans text-xs text-muted/70 leading-relaxed">
+            After logging in, go to the <strong>Deploy</strong> tab and click{' '}
+            <strong>Save &amp; Deploy</strong> to save your password to the repository —
+            this makes it work on any device.
+          </p>
+        )}
+
+        {!isFirstRun && (
+          <p className="mt-8 text-center font-sans text-xs text-muted/70">
+            To reset your password, clear this site's localStorage in your browser dev tools,
+            then deploy a new <code>adminConfig.json</code> from another logged-in device.
+          </p>
+        )}
 
         <div className="mt-8 text-center">
           <a

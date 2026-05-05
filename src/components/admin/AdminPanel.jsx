@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useContent } from '../../context/ContentContext';
 import { deployContent } from '../../utils/githubApi';
 import { resizeImage, fileSizeKB } from '../../utils/imageUtils';
+import { setPassword, getLocalHash } from '../../utils/auth';
 
 const GITHUB_SETTINGS_KEY = 'shachiGithubSettings';
 const TABS = ['content', 'artworks', 'media', 'deploy'];
@@ -428,6 +429,12 @@ function DeployTab({ local, clearDraft }) {
   const [status, setStatus] = useState('');
   const [deploying, setDeploying] = useState(false);
 
+  // Change password state
+  const [newPwd, setNewPwd] = useState('');
+  const [confirmPwd, setConfirmPwd] = useState('');
+  const [pwdError, setPwdError] = useState('');
+  const [pwdSuccess, setPwdSuccess] = useState(false);
+
   function saveSettings(patch) {
     const next = { ...settings, ...patch };
     setSettings(next);
@@ -445,13 +452,26 @@ function DeployTab({ local, clearDraft }) {
     setDeploying(true);
     setStatus('');
     try {
-      await deployContent(token, settings.owner, settings.repo, local);
+      const hash = getLocalHash();
+      await deployContent(token, settings.owner, settings.repo, local, hash);
       setStatus('ok:Deployed! GitHub Actions will rebuild the site in ~2 minutes.');
     } catch (err) {
       setStatus(`error:Deploy failed — ${err.message}`);
     } finally {
       setDeploying(false);
     }
+  }
+
+  async function handleChangePassword(e) {
+    e.preventDefault();
+    setPwdError('');
+    setPwdSuccess(false);
+    if (newPwd.length < 8) { setPwdError('Password must be at least 8 characters.'); return; }
+    if (newPwd !== confirmPwd) { setPwdError('Passwords do not match.'); return; }
+    await setPassword(newPwd);
+    setNewPwd('');
+    setConfirmPwd('');
+    setPwdSuccess(true);
   }
 
   const statusParts = status.split(':');
@@ -463,8 +483,9 @@ function DeployTab({ local, clearDraft }) {
       <Card title="GitHub Repository">
         <p className="font-sans text-sm text-muted mb-5 leading-relaxed">
           Clicking <strong>Save &amp; Deploy</strong> commits{' '}
-          <code className="bg-stone-100 px-1 text-xs">public/siteContent.json</code> directly to your
-          GitHub repo. GitHub Actions then rebuilds and redeploys the site automatically — no server needed.
+          <code className="bg-stone-100 px-1 text-xs">public/siteContent.json</code> and{' '}
+          <code className="bg-stone-100 px-1 text-xs">public/adminConfig.json</code> (with
+          your password hash) to GitHub. After the ~2 min rebuild, the password works on any device.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
@@ -503,6 +524,37 @@ function DeployTab({ local, clearDraft }) {
         >
           {deploying ? 'Deploying…' : 'Save & Deploy to GitHub'}
         </button>
+      </Card>
+
+      <Card title="Change Password">
+        <p className="font-sans text-sm text-muted mb-4 leading-relaxed">
+          Updates your password locally and marks it for the next deploy.
+          Click <strong>Save &amp; Deploy</strong> above to persist it to the repository.
+        </p>
+        <form onSubmit={handleChangePassword} className="space-y-3">
+          <div>
+            <Label>New password</Label>
+            <Input type="password" value={newPwd} onChange={setNewPwd} placeholder="Min 8 characters" />
+          </div>
+          <div>
+            <Label>Confirm new password</Label>
+            <Input type="password" value={confirmPwd} onChange={setConfirmPwd} placeholder="Repeat password" />
+          </div>
+          {pwdError && (
+            <p className="font-sans text-xs text-red-600 bg-red-50 border border-red-200 px-3 py-2">{pwdError}</p>
+          )}
+          {pwdSuccess && (
+            <p className="font-sans text-xs text-green-700 bg-green-50 border border-green-200 px-3 py-2">
+              Password updated locally — deploy to save it to the repository.
+            </p>
+          )}
+          <button
+            type="submit"
+            className="w-full sm:w-auto font-sans text-xs tracking-widest uppercase text-wood border border-wood px-4 py-2.5 hover:bg-wood hover:text-cream transition-colors"
+          >
+            Update password
+          </button>
+        </form>
       </Card>
 
       <Card title="Local Draft">
